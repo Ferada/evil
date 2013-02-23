@@ -444,6 +444,9 @@
 (evil-ex-define-cmd "@:" 'evil-ex-repeat)
 (evil-ex-define-cmd "set-initial-state" 'evil-ex-set-initial-state)
 (evil-ex-define-cmd "show-digraphs" 'evil-ex-show-digraphs)
+(evil-ex-define-cmd "co[py]" 'evil-copy-lines)
+(evil-ex-define-cmd "t" 'evil-copy-lines)
+(evil-ex-define-cmd "m[ove]" 'evil-move-lines)
 
 (when (fboundp 'undo-tree-visualize)
   (evil-ex-define-cmd "undol[ist]" 'undo-tree-visualize)

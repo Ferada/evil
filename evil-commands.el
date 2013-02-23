@@ -3000,6 +3000,57 @@ Default position is the beginning of the buffer."
         (message "\"%s\" %d %slines --%d%%--" file nlines readonly perc)
       (message "%d lines --%d%%--" nlines perc))))
 
+(evil-define-command evil-copy-lines (beg end address)
+  "Copies the lines given by [range] to below the line given by {address}."
+  (interactive "<r><a>")
+  (let ((range (eval (evil-ex-parse address nil 'range))))
+    (unless range
+      (error "Invalid address"))
+    (evil-with-undo
+      (let ((beginning (evil-range-beginning range))
+            (text (filter-buffer-substring beg end)))
+        ;; Ensure the text ends with a newline. This is required
+        ;; if the deleted lines were the last lines in the buffer.
+        (when (or (zerop (length text))
+                  (/= (aref text (1- (length text))) ?\n))
+          (setq text (concat text "\n")))
+        ;; goto start of paste address
+        (goto-char beginning)
+        (evil-move-end-of-line)
+        (insert "\n")
+        (insert text)
+        ;; delete the last newline
+        (delete-char -1)
+        (evil-move-beginning-of-line)))))
+
+(evil-define-command evil-move-lines (beg end address)
+  "Move the lines given by [range] to below the line given by {address}."
+  (interactive "<r><a>")
+  (let ((range (eval (evil-ex-parse address nil 'range))))
+    (unless range
+      (error "Invalid address"))
+    (let ((beginning (evil-range-beginning range)))
+      (when (and (<= beg beginning) (< beginning end)
+                 (not (eql (evil-range-end range) end)))
+        (error "Move lines into themselves"))
+      (evil-with-undo
+        (let ((text (filter-buffer-substring beg end)))
+          ;; Ensure the text ends with a newline. This is required
+          ;; if the deleted lines were the last lines in the buffer.
+          (when (or (zerop (length text))
+                    (/= (aref text (1- (length text))) ?\n))
+            (setq text (concat text "\n")))
+          ;; goto start of paste address
+          (goto-char beginning)
+          (evil-move-end-of-line)
+          (unless (eql end (point))
+            (insert "\n"))
+          (insert text)
+          ;; delete the last newline
+          (delete-char -1)
+          (evil-move-beginning-of-line)
+          (delete-region beg end))))))
+
 ;;; Window navigation
 
 (defun evil-resize-window (new-size &optional horizontal)
