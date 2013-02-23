@@ -7040,6 +7040,26 @@ maybe we need one line more with some text\n")
     ("u")
     "ABClne 1XYZ\nline 2\nl[i]ne 3\nline 4\nline 5\n"))
 
+(ert-deftest evil-test-copy-lines ()
+  "Test `evil-ex-copy-lines'."
+  (evil-test-buffer
+   "[l]ine 1\nline 2\nline 3\nline 4\nline 5\n"
+   (":1t1")
+   "line 1\n[l]ine 1\nline 2\nline 3\nline 4\nline 5\n"
+   ("u")
+   "line [1]\nline 2\nline 3\nline 4\nline 5\n"
+   ("gg:1,5t5")
+   "line 1\nline 2\nline 3\nline 4\nline 5\nline 1\nline 2\nline 3\nline 4\n[l]ine 5\n"))
+
+(ert-deftest evil-test-move-lines ()
+  "Test `evil-ex-move-lines'."
+  (evil-test-buffer
+   "[l]ine 1\nline 2\nline 3\nline 4\nline 5\n"
+   (":1,2m3")
+   "line 3\nline 1\n[l]ine 2\nline 4\nline 5\n"
+   ("u")
+   "line 1\nline 2\nline [3]\nline 4\nline 5\n"))
+
 ;;; Utilities
 
 (ert-deftest evil-test-parser ()
